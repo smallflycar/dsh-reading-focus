@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="README.md">简体中文</a> · <a href="README.en.md">English</a>
+</p>
+
 <p align="center"><img src="icon.svg" width="96" alt="Reading Focus"></p>
 
 <h1 align="center">Reading Focus for DeepSeek Harness</h1>
@@ -10,10 +14,23 @@
   <a href="https://github.com/smallflycar/dsh-reading-focus/releases"><img alt="Release" src="https://img.shields.io/github/v/release/smallflycar/dsh-reading-focus"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2f6fed.svg"></a>
   <img alt="DSH" src="https://img.shields.io/badge/DSH-0.2.2--rc.3%20%7C%200.2.x-4f70d9.svg">
-  <a href="README.md"><img alt="中文" src="https://img.shields.io/badge/lang-%E4%B8%AD%E6%96%87-6b7686.svg"></a>
 </p>
 
 > Every effect is a visual overlay. The plugin never edits the message text, inserts text nodes, or changes selection and copy.
+
+## Why this exists
+
+Agents are turning from "something you open occasionally" into the interface many people spend most of the day in. Long answers, long sessions and long contexts pile up, so the prose you scroll past in a day can exceed a whole article — and agent work is intermittent by nature: send a task, wait, switch back, read a bit more. Attention is interrupted just as it settles, and re-finding "where I was reading" costs more than it does in a single article.
+
+Reading aids in the browser (a reading ruler, line focus, colour bands, gradient text) already help people who get distracted easily. Agent transcripts are longer, denser and more stacked than a typical page, so the case is stronger here. The plugin does not train attention; it makes the current line clear at the moment you read it.
+
+It brings a few reading modes into DSH's transcript — frame the line under the pointer, push everything but the current paragraph back, separate adjacent passages with cycling colour blocks, replace a wall of black text with a line-by-line gradient — all as a visual overlay, with the original text, selection, copy and find untouched.
+
+**Typical moments**
+
+- a long answer where you lose your place while scanning;
+- coming back from another window and landing on the wrong paragraph;
+- checking a conclusion or a code block while the rest of the context keeps competing for attention.
 
 ## What it does
 
