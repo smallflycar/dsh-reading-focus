@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Reading Focus",
+    "description": "Adds reading aids to the chat transcript: gradient text, a reading ruler, line and block focus, and colour bands. Visual only — the message text, selection and copy are untouched. Enable it under Settings → Reading Focus; the five modes and their own controls live in the same panel."
+  }
+}
