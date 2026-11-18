@@ -15,10 +15,6 @@
   <a href="README.md">简体中文</a> · <a href="README.en.md">English</a>
 </p>
 
-> 纯视觉叠加：不改动正文、不插入文字节点、不影响选择和复制。
-
-<p align="center"><img src="docs/screenshots/gradient-dark.png" width="720" alt="渐变阅读"></p>
-
 ## 为什么做这个
 
 我每天在 Agent 里花的时间越来越长。它的输出很长，还会一直往后堆：一条回答上千字，聊几轮就是一整屏接一整屏的记录；用它的节奏又是断断续续的——发任务、等结果、再回来接着读。这种时候读长文容易累，注意力也容易散。
@@ -33,12 +29,23 @@
 - **段落聚焦** —— 当前段落保持原样，其余文字变淡或压暗。
 - **色块分段** —— 相邻内容用轮换的色块分开，代码和标题保持原样。
 
-|  |  |
-|---|---|
-| ![设置面板](docs/screenshots/settings-dark.png) | ![色块分段](docs/screenshots/bands-dark.png) |
-| **设置面板**：只显示当前模式用得上的控件 | **色块分段**：整段轮换色相 |
-| ![阅读尺](docs/screenshots/ruler-light.png) | ![段落聚焦](docs/screenshots/blocks-dark.png) |
-| **阅读尺**：上下实线 + 淡色带 | **段落聚焦**：当前段落保持原样 |
+## 截图
+
+![渐变阅读](docs/screenshots/gradient-dark.png)
+
+*渐变阅读：只给正文着色，逐行推进。*
+
+![色块分段](docs/screenshots/bands-dark.png)
+
+*色块分段：相邻内容用轮换的色块分开，代码和标题保持原样。*
+
+![阅读尺](docs/screenshots/ruler-light.png)
+
+*阅读尺：跟随指针的淡色带，上下各一条实线。*
+
+![段落聚焦](docs/screenshots/blocks-dark.png)
+
+*段落聚焦：当前段落保持原样，其余内容变淡或压暗。*
 
 *截图来自本地夹具，仅作效果示意。*
 
@@ -65,7 +72,6 @@ dsh plugin --profile <profile> add dsh-reading-focus
 
 ## 说明
 
-- 只做视觉叠加：不修改正文、不插入文字节点、不影响选择、复制和查找。
 - 五种效果可以随时切换，不需要重开对话。
 - 遇到问题或有建议，欢迎在 [Issues](https://github.com/smallflycar/dsh-reading-focus/issues) 里提。
 

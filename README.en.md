@@ -15,10 +15,6 @@
   <a href="README.md">简体中文</a> · <a href="README.en.md">English</a>
 </p>
 
-> Visual overlays only: the message text is never edited, and selection and copy are untouched.
-
-<p align="center"><img src="docs/screenshots/gradient-dark.png" width="720" alt="Gradient reading"></p>
-
 ## Why this exists
 
 I spend more and more of my day in an agent. Its output is long and keeps piling up: an answer runs to a thousand words, and a few turns become screen after screen of transcript. The way I work with it is stop-start as well — send a task, wait, come back and keep reading. Reading that much text is tiring, and attention drifts.
@@ -33,12 +29,23 @@ Reading rulers, line focus and colour bands have existed in browsers for a long 
 - **Block focus** — the current paragraph stays as it is and the rest fades or dims.
 - **Colour bands** — adjacent passages separated by cycling colour blocks; code and headings stay plain.
 
-|  |  |
-|---|---|
-| ![Settings](docs/screenshots/settings-dark.png) | ![Colour bands](docs/screenshots/bands-dark.png) |
-| **Settings** — only the controls the current mode uses | **Colour bands** — cycling hues |
-| ![Reading ruler](docs/screenshots/ruler-light.png) | ![Block focus](docs/screenshots/blocks-dark.png) |
-| **Reading ruler** — edge lines and a faint band | **Block focus** — the current paragraph stays as it is |
+## Screenshots
+
+![Gradient reading](docs/screenshots/gradient-dark.png)
+
+*Gradient reading: body text only, advancing line by line.*
+
+![Colour bands](docs/screenshots/bands-dark.png)
+
+*Colour bands: adjacent passages separated by cycling colours; code and headings stay plain.*
+
+![Reading ruler](docs/screenshots/ruler-light.png)
+
+*Reading ruler: a faint band with a solid line on each edge.*
+
+![Block focus](docs/screenshots/blocks-dark.png)
+
+*Block focus: the current paragraph stays as it is, the rest fades or dims.*
 
 *Screenshots come from the local fixture and are illustrative.*
 
@@ -65,7 +72,6 @@ Light and dark themes both work. Code, tables and headings are always left alone
 
 ## Notes
 
-- Visual overlays only: the message text is never edited, and selection, copy and find are untouched.
 - Switch between the five modes at any time; no need to reopen the conversation.
 - Bug reports and suggestions are welcome in [Issues](https://github.com/smallflycar/dsh-reading-focus/issues).
 
