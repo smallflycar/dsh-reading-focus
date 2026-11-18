@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/smallflycar/dsh-reading-focus"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-repo-24292f.svg"></a>
+  <a href="https://www.npmjs.com/package/dsh-reading-focus"><img alt="npm" src="https://img.shields.io/npm/v/dsh-reading-focus"></a>
   <a href="https://github.com/smallflycar/dsh-reading-focus/releases"><img alt="Release" src="https://img.shields.io/github/v/release/smallflycar/dsh-reading-focus"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2f6fed.svg"></a>
   <img alt="DSH" src="https://img.shields.io/badge/DSH-0.2.2--rc.3%20%7C%200.2.x-4f70d9.svg">
@@ -38,7 +39,7 @@
 dsh plugin --profile <profile> add dsh-reading-focus
 ```
 
-包尚未发布到 npm，或想不经过 npm 安装时，可以直接用 GitHub Release 里的 tarball：
+不想经过 npm 时，可以直接用 GitHub Release 里的 tarball：
 
 ```bash
 dsh plugin --profile <profile> add https://github.com/smallflycar/dsh-reading-focus/releases/download/v0.8.4/dsh-reading-focus-0.8.4.tgz
