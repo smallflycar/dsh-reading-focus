@@ -47,7 +47,7 @@
 
 *段落聚焦：当前段落保持原样，其余内容变淡或压暗。*
 
-*截图来自本地夹具，仅作效果示意。*
+*截图来自仓库自带的本地预览页 `preview.html`，仅作效果示意。*
 
 ## 安装
 
@@ -78,3 +78,5 @@ dsh plugin --profile <profile> add dsh-reading-focus
 ## 许可证
 
 MIT，详见 [LICENSE](LICENSE)。
+
+[![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)

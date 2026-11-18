@@ -47,7 +47,7 @@ Reading rulers, line focus and colour bands have existed in browsers for a long 
 
 *Block focus: the current paragraph stays as it is, the rest fades or dims.*
 
-*Screenshots come from the local fixture and are illustrative.*
+*Screenshots come from the local preview page `preview.html` and are illustrative.*
 
 ## Install
 
@@ -78,3 +78,5 @@ Light and dark themes both work. Code, tables and headings are always left alone
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+[![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)

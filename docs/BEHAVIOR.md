@@ -72,4 +72,4 @@ DSH 的行高不是倍数，而是「字号 + 10px」的阶梯（14→24、16→
 
 ## 截图说明
 
-README 与 `docs/screenshots` 里的截图都来自仓库自带的本地夹具 `preview.html`，用于说明视觉效果，不是真实 DSH 界面的像素证据。
+README 与 `docs/screenshots` 里的截图都来自仓库自带的本地预览页 `preview.html`，用于说明视觉效果，不是真实 DSH 界面的像素证据。
