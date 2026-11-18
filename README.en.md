@@ -20,17 +20,9 @@
 
 ## Why this exists
 
-Agents are turning from "something you open occasionally" into the interface many people spend most of the day in. Long answers, long sessions and long contexts pile up, so the prose you scroll past in a day can exceed a whole article — and agent work is intermittent by nature: send a task, wait, switch back, read a bit more. Attention is interrupted just as it settles, and re-finding "where I was reading" costs more than it does in a single article.
+I spend more and more of my day in an agent. Its output is long and keeps piling up: an answer runs to a thousand words, and a few turns become screen after screen of transcript. The way I work with it is stop-start as well — send a task, wait, come back and keep reading. Reading that much text is tiring, and attention drifts.
 
-Reading aids in the browser (a reading ruler, line focus, colour bands, gradient text) already help people who get distracted easily. Agent transcripts are longer, denser and more stacked than a typical page, so the case is stronger here. The plugin does not train attention; it makes the current line clear at the moment you read it.
-
-It brings a few reading modes into DSH's transcript — frame the line under the pointer, push everything but the current paragraph back, separate adjacent passages with cycling colour blocks, replace a wall of black text with a line-by-line gradient — all as a visual overlay, with the original text, selection, copy and find untouched.
-
-**Typical moments**
-
-- a long answer where you lose your place while scanning;
-- coming back from another window and landing on the wrong paragraph;
-- checking a conclusion or a code block while the rest of the context keeps competing for attention.
+Reading rulers, line focus and colour bands have existed in browsers for a long time, to make long text easier to read. Agent transcripts are longer and denser, and I think they need those aids more, so I brought a few of them into the DSH transcript. They are visual overlays only; the text is untouched.
 
 ## What it does
 
