@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/smallflycar/dsh-reading-focus"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-repo-24292f.svg"></a>
+  <img alt="DSH plugin" src="https://img.shields.io/badge/DSH-plugin-4f70d9.svg">
   <a href="https://www.npmjs.com/package/dsh-reading-focus"><img alt="npm" src="https://img.shields.io/npm/v/dsh-reading-focus"></a>
   <a href="https://github.com/smallflycar/dsh-reading-focus/releases"><img alt="Release" src="https://img.shields.io/github/v/release/smallflycar/dsh-reading-focus"></a>
 </p>
@@ -73,8 +74,6 @@ Light and dark themes both work. Code, tables and headings are always left alone
 
 - Switch between the five modes at any time; no need to reopen the conversation.
 - Bug reports and suggestions are welcome in [Issues](https://github.com/smallflycar/dsh-reading-focus/issues).
-
-Implementation and compatibility notes are in [docs/BEHAVIOR.md](docs/BEHAVIOR.md) (Chinese).
 
 ## License
 

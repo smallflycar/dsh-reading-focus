@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/smallflycar/dsh-reading-focus"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-repo-24292f.svg"></a>
+  <img alt="DSH plugin" src="https://img.shields.io/badge/DSH-plugin-4f70d9.svg">
   <a href="https://www.npmjs.com/package/dsh-reading-focus"><img alt="npm" src="https://img.shields.io/npm/v/dsh-reading-focus"></a>
   <a href="https://github.com/smallflycar/dsh-reading-focus/releases"><img alt="Release" src="https://img.shields.io/github/v/release/smallflycar/dsh-reading-focus"></a>
 </p>
@@ -73,8 +74,6 @@ dsh plugin --profile <profile> add dsh-reading-focus
 
 - 五种效果可以随时切换，不需要重开对话。
 - 遇到问题或有建议，欢迎在 [Issues](https://github.com/smallflycar/dsh-reading-focus/issues) 里提。
-
-更详细的实现与兼容性说明见 [docs/BEHAVIOR.md](docs/BEHAVIOR.md)。
 
 ## 许可证
 
