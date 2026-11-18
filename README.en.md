@@ -1,76 +1,75 @@
-<p align="center">
-  <a href="README.md">简体中文</a> · <a href="README.en.md">English</a>
-</p>
-
-<p align="center"><img src="icon.svg" width="96" alt="Reading Focus"></p>
+<p align="center"><img src="icon.svg" width="88" alt="Reading Focus"></p>
 
 <h1 align="center">Reading Focus for DeepSeek Harness</h1>
 
-<p align="center">A reading layer for the DeepSeek Harness chat surface: gradient text, a reading ruler, line and block focus, and colour bands.</p>
+<p align="center">Gradient text, a reading ruler, line and block focus, and colour bands for the DeepSeek Harness chat transcript.</p>
 
 <p align="center">
   <a href="https://github.com/smallflycar/dsh-reading-focus"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-repo-24292f.svg"></a>
   <a href="https://www.npmjs.com/package/dsh-reading-focus"><img alt="npm" src="https://img.shields.io/npm/v/dsh-reading-focus"></a>
   <a href="https://github.com/smallflycar/dsh-reading-focus/releases"><img alt="Release" src="https://img.shields.io/github/v/release/smallflycar/dsh-reading-focus"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2f6fed.svg"></a>
-  <img alt="DSH" src="https://img.shields.io/badge/DSH-0.2.2--rc.3%20%7C%200.2.x-4f70d9.svg">
 </p>
 
-> Every effect is a visual overlay. The plugin never edits the message text, inserts text nodes, or changes selection and copy.
+<p align="center">
+  <a href="README.md">简体中文</a> · <a href="README.en.md">English</a>
+</p>
+
+> Visual overlays only: the message text is never edited, and selection and copy are untouched.
+
+<p align="center"><img src="docs/screenshots/gradient-dark.png" width="720" alt="Gradient reading"></p>
 
 ## Why this exists
 
 I spend more and more of my day in an agent. Its output is long and keeps piling up: an answer runs to a thousand words, and a few turns become screen after screen of transcript. The way I work with it is stop-start as well — send a task, wait, come back and keep reading. Reading that much text is tiring, and attention drifts.
 
-Reading rulers, line focus and colour bands have existed in browsers for a long time, to make long text easier to read. Agent transcripts are longer and denser, and I think they need those aids more, so I brought a few of them into the DSH transcript. They are visual overlays only; the text is untouched.
+Reading rulers, line focus and colour bands have existed in browsers for a long time, to make long text easier to read. Agent transcripts are longer and denser, and I think they need those aids more, so I brought a few of them into the DSH transcript.
 
-## What it does
+## Features
 
-- **Gradient reading** — colours body text line by line, alternating direction so each line break lands on a full colour or the base tone; headings, code and tables keep their own colour.
-- **Reading ruler** — a faint band with two solid edge lines that follows the pointer; medium scroll protection so it stays aligned while scrolling.
-- **Line focus** — the rows under the pointer stay fully transparent while the rest of the page is dimmed.
-- **Block focus** — the current paragraph stays as it is and the rest either fades its text or dims behind a veil.
-- **Colour bands** — alternating blocks separate adjacent passages; code blocks and headings are excluded, tables are banded, and a tool call does not restart the hue cycle.
+- **Gradient reading** — gradient text that advances line by line, switching hue every two lines.
+- **Reading ruler** — a faint band with a solid line on each edge, following the pointer.
+- **Line focus** — the rows near the pointer stay clear while the rest is dimmed.
+- **Block focus** — the current paragraph stays as it is and the rest fades or dims.
+- **Colour bands** — adjacent passages separated by cycling colour blocks; code and headings stay plain.
 
-Font size is shared with DSH's own stepper (10–22 px, default 14). Line height follows DSH's own ladder (`size + 10px`); the plugin only adds an optional 0–12 px extra spacing on top, and `0` leaves DSH's line height untouched.
+|  |  |
+|---|---|
+| ![Settings](docs/screenshots/settings-dark.png) | ![Colour bands](docs/screenshots/bands-dark.png) |
+| **Settings** — only the controls the current mode uses | **Colour bands** — cycling hues |
+| ![Reading ruler](docs/screenshots/ruler-light.png) | ![Block focus](docs/screenshots/blocks-dark.png) |
+| **Reading ruler** — edge lines and a faint band | **Block focus** — the current paragraph stays as it is |
+
+*Screenshots come from the local fixture and are illustrative.*
 
 ## Install
 
-In DSH Desktop: **Settings → Plugins → Add plugin**, enter `dsh-reading-focus`, install, then refresh the page.
+**DSH Desktop**: open **Settings → Plugins → Add plugin**, enter `dsh-reading-focus`, install, then refresh the page.
 
-From a terminal:
+**Command line**:
 
 ```bash
 dsh plugin --profile <profile> add dsh-reading-focus
-
-# without npm, straight from the GitHub release
-dsh plugin --profile <profile> add https://github.com/smallflycar/dsh-reading-focus/releases/download/v0.8.4/dsh-reading-focus-0.8.4.tgz
-
-# from a local build
-npm run build && npm run pack
-dsh plugin --profile <profile> add ./dist/dsh-reading-focus-0.8.4.tgz
-
-# development
-dsh plugin --profile <profile> add "link:/absolute/path/to/this/repo"
 ```
 
-Turn it on under **Settings → Reading focus**. With a `link:` install, rebuild and reload the plugin after changing the source.
+Requires DSH 0.2.x (verified on 0.2.2-rc.5). You can also install the tarball from the [latest release](https://github.com/smallflycar/dsh-reading-focus/releases/latest).
 
-## Development
+## Usage
 
-```bash
-npm run build                  # src/*.js -> lib/client.js, lib/index.js, preview.html
-npm test                       # build + 17 assertions (logic, structure, artifact equality)
-npm run test:browser           # 19 rendering assertions in headless Chrome
-npm run test:browser:geometry  # 7 geometry assertions in headless Chrome
-npm run pack                   # dist/dsh-reading-focus-<version>.tgz
-```
+1. Open **Settings → Reading Focus** and turn on the switch.
+2. Pick a mode; the panel shows only the controls that apply.
+3. Use **Adjust in the transcript** to tune it while reading.
+4. Everything is saved and restored on the next open.
 
-Generated files are built from `src/`; tests compare them byte for byte, so a stale build fails. `preview.html` and `docs/screenshots` are local fixtures, not real-GUI evidence.
+Light and dark themes both work. Code, tables and headings are always left alone.
 
-## Compatibility
+## Notes
 
-The plugin relies on private host structure: markdown roots that are direct children of `.xMeOpW_body` with a `_markdown_[alnum]_[digits]` class, plus `data-chat-turn`, `data-slot="conversation.chat.flow"` and `data-composer-*` markers. It is verified against DSH 0.2.2-rc.3; a host refactor may require an update. It never reads credentials or modifies the profile.
+- Visual overlays only: the message text is never edited, and selection, copy and find are untouched.
+- Switch between the five modes at any time; no need to reopen the conversation.
+- Bug reports and suggestions are welcome in [Issues](https://github.com/smallflycar/dsh-reading-focus/issues).
+
+Implementation and compatibility notes are in [docs/BEHAVIOR.md](docs/BEHAVIOR.md) (Chinese).
 
 ## License
 
