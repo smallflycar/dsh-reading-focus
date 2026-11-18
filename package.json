@@ -1,0 +1,69 @@
+{
+  "name": "dsh-reading-focus",
+  "version": "0.8.4",
+  "description": "Reading focus overlays for DSH: gradient text, ruler, line and block focus, colour bands",
+  "author": "dsh-reading-focus contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smallflycar/dsh-reading-focus.git"
+  },
+  "homepage": "https://github.com/smallflycar/dsh-reading-focus#readme",
+  "bugs": {
+    "url": "https://github.com/smallflycar/dsh-reading-focus/issues"
+  },
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "preview.html"
+  ],
+  "engines": {
+    "dsh": ">=0.2.2-rc.3 <0.3.0"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "reading",
+    "adhd",
+    "focus",
+    "accessibility"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.mjs",
+    "pretest": "node build.mjs",
+    "test": "node test/plugin.test.mjs",
+    "pretest:browser": "node build.mjs",
+    "test:browser": "node test/browser-validation.mjs",
+    "pretest:browser:geometry": "node build.mjs",
+    "test:browser:geometry": "node test/conversation-regression.mjs",
+    "prepack": "node build.mjs",
+    "pack": "node -e \"require('node:fs').mkdirSync('dist',{recursive:true})\" && npm pack --pack-destination dist"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings"
+      ],
+      "external": [
+        "react"
+      ]
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

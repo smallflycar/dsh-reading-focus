@@ -1,0 +1,18 @@
+# Local, machine-specific files that must never be published.
+_local/
+dist/
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test artifacts: headless Chrome profiles, screenshots, logs.
+test/*profile*/
+test/*.png
+*.log
+
+# OS / editor noise.
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

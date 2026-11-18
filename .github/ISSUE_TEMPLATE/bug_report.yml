@@ -1,0 +1,91 @@
+name: Bug report / 问题反馈
+description: Something renders wrong, or a setting does not do what it says.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请先确认「设置 → 阅读辅助」面板标题上显示的版本号（v0.8.4 之类），它能直接定位构建。
+        Please check the version shown in the settings panel first.
+
+  - type: input
+    id: dsh-version
+    attributes:
+      label: DSH version / DSH 版本
+      description: 例如 0.2.2-rc.3。可在 DSH 设置里看到。
+      placeholder: 0.2.2-rc.3
+    validations:
+      required: true
+
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version / 插件版本
+      description: 设置面板标题旁显示的版本号。
+      placeholder: v0.8.4
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: How it was installed / 安装方式
+      options:
+        - DSH Desktop → Settings → Plugins
+        - dsh plugin … add (npm)
+        - dsh plugin … add (tarball)
+        - link: local directory
+    validations:
+      required: true
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode / 模式
+      multiple: true
+      options:
+        - 阅读尺 ruler
+        - 多行聚焦 lines
+        - 段落聚焦 blocks
+        - 色块分段 bands
+        - 渐变阅读 gradient
+        - 正文字体 typography
+        - 设置面板 settings
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      placeholder: |
+        1. 打开一个长回答
+        2. 选择「多行聚焦」
+        3. 鼠标从上往下移动
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual / 期望与实际
+      placeholder: 期望……；实际……
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment / 环境
+      description: 操作系统、深浅主题、字号/行距设置、是否启用其他插件。
+      placeholder: Windows 11 · dark theme · 字号 16 · 额外行距 2
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting / 提交前
+      options:
+        - label: 我确认这不是宿主 DSH 本身的问题（例如换一个插件关掉后仍然出现）。
+          required: false
+        - label: 我已附上截图（如果问题是视觉上的）。
+          required: false
