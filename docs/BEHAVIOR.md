@@ -66,9 +66,24 @@ DSH 的行高不是倍数，而是「字号 + 10px」的阶梯（14→24、16→
 
 ## 兼容性与依赖
 
-插件依赖 DSH 页面内部的结构，而不是公开 API：`.xMeOpW_body` 直子中符合 `_markdown_[字母数字]_[数字]` 的 Markdown 根、`data-chat-turn`、`data-slot="conversation.chat.flow"`、`data-composer-*` 等标记。已确认 rc.1 的 `_markdown_rve47_5` 与 rc.3 的 `_markdown_13jw0_5`；仅 hash 变化的类名仍兼容，body 类或宿主结构变化可能需要重新适配，不承诺其他结构。
+插件依赖 DSH 页面内部的结构，而不是公开 API：正文容器直子中的 Markdown 根、`data-chat-turn`、`data-slot="conversation.chat.flow"`、`data-composer-*` 等标记。
 
-`package.json` 的 `engines.dsh` 声明了测试过的范围（`>=0.2.2-rc.3 <0.3.0`）。DSH 升级后如效果异常，请先升级插件或在仓库里反馈。插件不读取认证信息，不修改 profile。
+DSH 的客户端样式是 CSS Modules，类名带构建期哈希，而且 0.2.2 之后命名顺序还翻转过：
+
+- **正文容器**一直是「哈希在前」：0.2.x 为 `xMeOpW_body`，更早的桌面构建为 `v5IAXa_body`；同一个 bundle 里还有另外四个 `_body` 局部名（命令行、回合触发、上下文注入等），不能一律当正文。
+- **Markdown 根**换过顺序：0.2.2 及更早是 Vite 生成的 `_markdown_哈希_序号`（`_markdown_rve47_5`）；0.2.3-alpha.1 起 `dsh-client-ui-primitives` 改为随前端 bundle 构建（staticLinked，样式在挂载时安装），根变成 `哈希_markdown`（0.2.3-alpha.2 实测 `-TmMFa_markdown`）。0.8.4 及更早只匹配前一种，所以在 0.2.3-alpha.1 之后一个正文根都找不到，五种效果全部不生效——这和正文容器类名无关。官方升级指南 `docs/upgrade-guide/v0.2.2-rc.2/client-module-metadata` 记录了这套 staticLinked 机制与 `哈希_名字` 的命名。
+
+0.8.6 起两种顺序、任何哈希都不再写死：
+
+- **Markdown 根**：类名含 `markdown`，而且是正文容器的直子；
+- **正文容器**：类名以 `_body` 结尾、直子含 Markdown 根，并且不在 `assistant-step` 以外的流项目里（`data-chat-flow-kind` 为 `tool`、`command` 等一律不算正文）；
+- 识别出的容器记在 `WeakSet` 里，指针命中、行高换算、正文列宽都只认这些容器，不会把别的 `_body` 误当正文；
+- 行高覆盖规则挂在插件给正文容器写的 `data-reading-focus-body` 标记上，清除覆盖时一并移除；
+- 如果宿主把 `body` 这个局部名也改了，退回结构识别：聊天流里包裹 Markdown 根的容器。
+
+哈希属于构建产物，不是协议：DSH 用 CSS Modules 编译客户端样式，哈希取自样式表的构建路径，所以**只有在模块被移动或改名时才会换哈希**（0.2.2-rc.2 那轮就把 `_名字_哈希` 整体翻成了 `哈希_名字`）；同一个版本 macOS 与 Windows 装的是同一批发布的客户端包，类名相同，不同的只有版本。
+
+已确认的构建：0.2.1-rc.5（第三方主题插件实测为 `xMeOpW_root`）、0.2.2-rc.1 与 rc.3（本插件早期适配时实测，Markdown 根为 `_markdown_哈希_序号`）、0.2.3-alpha.2（本机实测，Markdown 根为 `-TmMFa_markdown`）的正文容器都是同一个 `xMeOpW`。0.2.2-rc.5 与 rc.3 处于同一个模块路径，按哈希的生成方式正文容器应当一致；但它的 Markdown 根顺序没有实测，0.8.6 起两种顺序都接受，所以不再需要逐个版本核对。`package.json` 的 `engines.dsh` 声明了测试过的范围（`>=0.2.2-rc.3 <0.3.0`）。DSH 升级后如效果异常，请先升级插件或在仓库里反馈；`docs/DIAGNOSIS.md` 有一段可在宿主页面里直接运行的检查脚本。插件不读取认证信息，不修改 profile。
 
 ## 截图说明
 

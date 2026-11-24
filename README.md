@@ -58,7 +58,29 @@
 dsh plugin --profile <profile> add dsh-reading-focus
 ```
 
-需要 DSH 0.2.x（已在 0.2.2-rc.5 上验证）。也可以从 [Release](https://github.com/smallflycar/dsh-reading-focus/releases/latest) 下载 tarball 安装。
+需要 DSH 0.2.x。也可以从 [Release](https://github.com/smallflycar/dsh-reading-focus/releases/latest) 下载 tarball 安装。
+
+## 兼容性
+
+| DSH 版本 | 正文容器 | Markdown 根 | 状态 |
+| --- | --- | --- | --- |
+| 0.2.3-alpha.1 及以后 | `xMeOpW_body` | `哈希_markdown`（如 `-TmMFa_markdown`） | ✅ 0.2.3-alpha.2 实测 |
+| 0.2.2 rc 系列 | `xMeOpW_body` | `_markdown_哈希_序号` | ✅ |
+| 0.2.1 及更早 | `v5IAXa_body` | `_markdown_哈希_序号` | ✅ 结构识别，未实机 |
+
+宿主类名里的哈希是构建产物，和操作系统无关；插件不依赖具体哈希，也不依赖类名里的顺序：
+
+- 正文容器认「类名以 `_body` 结尾、直子含 Markdown 根、且不在工具行等非 `assistant-step` 流项目里」；
+- Markdown 根认「类名含 `markdown`、且是正文容器的直子」，`_markdown_哈希_序号` 和 `哈希_markdown` 两种都接受；
+- 万一宿主连 `body` 这个局部名都改了，退回结构识别：聊天流里包裹 Markdown 根的容器。
+
+所以 DSH 小版本升级、换机器、换系统都不需要重新适配。唯一还需要人工介入的情况是宿主改了 `markdown` 这个局部名，或把 Markdown 根挪进别的容器。
+
+## 更新记录
+
+**0.8.6** —— 适配 DSH 0.2.3-alpha.1 起的类名变化。那一版把 `dsh-client-ui-primitives` 改为随前端 bundle 构建，Markdown 根从 `_markdown_哈希_序号` 变成 `哈希_markdown`，旧选择器因此一个正文块都找不到。现在两种顺序、任意哈希都认；同时区分正文容器与工具行、命令行那类同样以 `_body` 结尾的容器。
+
+**0.8.5** —— 不再写死正文容器的哈希；行高覆盖规则改挂在插件自己写的 `data-reading-focus-body` 标记上，清除覆盖时一并移除。
 
 ## 使用
 

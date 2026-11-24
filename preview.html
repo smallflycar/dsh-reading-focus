@@ -266,26 +266,88 @@ function createGradientController({state,roots,blocks,viewport,notify,flowOf}){
 }
 
 // Shown in the settings panel so a loaded build can be identified at a glance.
-const RF_VERSION = '0.8.4';
+const RF_VERSION = '0.8.6';
 // One source of truth for the typography controls. The size range mirrors the host's own text
 // stepper (10-22, default 14). Line height is not a ratio here: the host computes it as
 // `24px + (size - 14)` (the `--dsh-content-font-delta` ladder), so this plugin only adds an
 // optional extra on top of that instead of re-deriving a competing line height.
 const RF_FONT = {sizeMin:10,sizeMax:22,sizeDefault:14,extraMin:0,extraMax:12,lineBase:24,baseSize:14};
-// Candidate selector only: all consumers must validate the complete class token.
-const RF_ROOT = '.xMeOpW_body > [class*="_markdown_"], [data-reading-focus-preview]';
-function rfMarkdownClassToken(token) { return /^_markdown_[A-Za-z0-9]+_\d+$/.test(token); }
-function rfRootIdentity({preview, bodyParent, classTokens}) {
-  return !!preview || !!bodyParent && classTokens.some(rfMarkdownClassToken);
+// The host builds its client CSS as CSS Modules, so every local class carries a build-time hash.
+// Two things changed across the 0.2.x line and neither is a contract:
+//   - the body container is `<hash>_body` (0.2.x: `xMeOpW_body`, earlier: `v5IAXa_body`);
+//   - the markdown root is `<hash>_markdown` in the current web frontend (`-TmMFa_markdown`), while
+//     the 0.2.2-rc.1/rc.3 builds emitted `_markdown_<hash>_<n>` instead.
+// So nothing here spells a hash out: a body is a container whose class token ends in `_body`, and a
+// root is a child whose class token contains `markdown`. Four other `_body` locals live in the same
+// bundle (command rows, turn triggers, ...), so a body inside a non-assistant flow item is rejected;
+// the kind check only applies when the host marks one. See docs/BEHAVIOR.md.
+const RF_ROOT = '[class*="markdown"], [data-reading-focus-preview]';
+const RF_FLOW = '[data-slot="conversation.chat.flow"], [data-chat-turn], [data-chat-flow-kind]';
+// The marker this plugin writes on recognised bodies; the line-height rule anchors on it instead of
+// on a class name. It is removed again when the typography override is cleared.
+const RF_BODY_MARK = 'data-reading-focus-body';
+// Reading bodies are the exact elements the root scan accepted, never "anything with a `_body` token".
+const rfKnownBodies = new WeakSet();
+// Set by rfPrimeBodies: whether the host still names a body container at all.
+let rfBodyFallback = false;
+function rfBodyToken(token) { return token.length > 5 && token.endsWith('_body'); }
+function rfMarkdownToken(token) { return /markdown/i.test(token); }
+function rfHasToken(node, test) {
+  if(!node || node.nodeType !== 1) return false;
+  const tokens = node.classList;
+  for(let i = 0; i < tokens.length; i++) if(test(tokens[i])) return true;
+  return false;
+}
+function rfIsBody(node) { return !!node && rfKnownBodies.has(node); }
+function rfBodyAncestor(node) {
+  for(let el=node;el;el=el.parentElement)if(rfKnownBodies.has(el))return el;
+  return null;
+}
+// Bodies are the parents that hold markdown roots, so the structure never needs the class hash.
+function rfMarkBodies(rootList) {
+  for(const root of rootList) {
+    const body = root?.parentElement;
+    if(body && !body.hasAttribute(RF_BODY_MARK)) body.setAttribute(RF_BODY_MARK, '');
+  }
+}
+// Fall back to structure only when the host no longer names the container at all.
+function rfPrimeBodies(scope) {
+  rfBodyFallback = true;
+  for(const el of scope.querySelectorAll('[class*="_body"]')) if(rfHasToken(el, rfBodyToken)){rfBodyFallback = false;break;}
 }
 function matchesRoot(node) {
-  return !!node && node.nodeType===1 && rfRootIdentity({preview:node.hasAttribute('data-reading-focus-preview'),bodyParent:!!node.parentElement?.classList.contains('xMeOpW_body'),classTokens:[...node.classList]});
+  if(!node || node.nodeType !== 1) return false;
+  if(node.hasAttribute('data-reading-focus-preview')) return true;
+  const parent = node.parentElement;
+  if(!parent || !rfHasToken(node, rfMarkdownToken)) return false;
+  // A reading body is named `*_body` and holds a markdown root. Tool rows, command rows and turn
+  // triggers also carry a `_body` local in the same bundle, so the enclosing flow kind decides.
+  if(rfHasToken(parent, rfBodyToken)) {
+    const kind = parent.closest('[data-chat-flow-kind]');
+    if(kind && kind.getAttribute('data-chat-flow-kind') !== 'assistant-step') return false;
+    rfKnownBodies.add(parent); return true;
+  }
+  // The host renamed the `body` local: accept the container of any markdown root inside a flow.
+  if(rfBodyFallback && parent.closest(RF_FLOW)){rfKnownBodies.add(parent);return true;}
+  return false;
 }
 function queryRoots(node) { return [...node.querySelectorAll(RF_ROOT)].filter(matchesRoot); }
 function closestRoot(node) {
   for(let el=node;el;el=el.parentElement)if(matchesRoot(el))return el;
   return null;
 }
+// First paragraph (or list item) of any reading body: type metrics and the fade colour read it.
+function rfReadingSample(rootList) {
+  for(const root of rootList) {
+    if(!root?.isConnected) continue;
+    const body = root.parentElement;
+    if(!body) continue;
+    const text = body.querySelector('p, li') || root.querySelector('p, li');
+    if(text) return text;
+  }
+  return null;
+}
+function rfRootDocumentSample() { return document.querySelector('[class*="markdown"] p, [class*="markdown"] li'); }
 const RF_BLOCK = 'p,li,h1,h2,h3,h4,h5,h6,blockquote,pre,table';
 const RF_OCCLUDERS = '[data-composer-seat], [data-composer-card], [data-composer-overlay], [data-composer-dock], [data-composer-input], [data-code-block-banner], [data-conversation-region="composer"], [data-slot="conversation.input.dock"], [role="toolbar"], [role="menu"], [role="dialog"], dialog[open], [aria-modal="true"], footer';
 
@@ -396,8 +458,8 @@ function rfVeilColor(state){const key=state.mode==='blocks'?'blocks':'lines';ret
 function rfTintColor(state){return rfRgba(rfColorValue(state,'blocks','tintColor','#4e9ee0'),rfColorValue(state,'blocks','tintOpacity',.1));}
 // Block focus fades the text itself: the live text colour at reduced alpha blends with whatever
 // background the theme uses, so no overlay is needed and the result inherits the real colours.
-function rfDimColor(state){
-  const sample=document.querySelector('.xMeOpW_body p, .xMeOpW_body li, .xMeOpW_body');
+function rfDimColor(state, rootList){
+  const sample=rfReadingSample(rootList) || rfRootDocumentSample();
   const rgb=sample?rfParseColor(getComputedStyle(sample).color):null;
   const base=rgb?rgb.slice(0,3):[230,232,238];
   const alpha=rfColorValue(state,'blocks','dimOpacity',.45);
@@ -424,8 +486,8 @@ function rfGradientPill(name){
 }
 // Read back the size the reading body actually renders, in the same px units the host's own
 // stepper uses, so the panel opens on the host's real value instead of assuming 14px.
-function rfHostFontSize(){
-  const body=document.querySelector('.xMeOpW_body p, .xMeOpW_body li, .xMeOpW_body');
+function rfHostFontSize(rootList){
+  const body=rfReadingSample(rootList) || rfRootDocumentSample();
   if(!body)return RF_FONT.sizeDefault;
   const size=Number.parseFloat(getComputedStyle(body).fontSize);
   return Number.isFinite(size)&&size>0?size:RF_FONT.sizeDefault;
@@ -437,7 +499,7 @@ function rfHostLineHeight(size){return RF_FONT.lineBase + (size - RF_FONT.baseSi
 // rfTypographyWritten remembers what this plugin last wrote, so a host-side change can be told
 // apart from our own write when the observer fires.
 let rfTypographyWritten='';
-function rfApplyTypography(font,{writeVar=true}={}){
+function rfApplyTypography(font,{writeVar=true,roots=null}={}){
   const target=document.body;
   const px=Number.isFinite(font?.size)?font.size:null;
   const extra=Number.isFinite(font?.extra)?Math.max(0,font.extra):0;
@@ -447,13 +509,16 @@ function rfApplyTypography(font,{writeVar=true}={}){
   if(px!==null&&writeVar){target.style.setProperty('--dsh-content-font-size',px.toFixed(2)+'px');rfTypographyWritten=px.toFixed(2)+'px';}
   // Only an explicit extra spacing overrides the host ladder, and even then it rides the host's own
   // variable: the size delta still applies, so a later font-size change keeps the added room.
-  if(px!==null&&extra>0)rules.push(`.xMeOpW_root .xMeOpW_body,.xMeOpW_root .xMeOpW_body p,.xMeOpW_root .xMeOpW_body li,:is(.xMeOpW_body>*){line-height:calc(${RF_FONT.lineBase}px + var(--dsh-content-font-delta, 0px) + ${extra}px)}`);
+  // The rule targets the bodies this plugin has already recognised, because their class names carry
+  // a build hash that differs between host versions.
+  if(px!==null&&extra>0){if(roots)rfMarkBodies(roots);const m=`[${RF_BODY_MARK}]`;rules.push(`${m},${m} p,${m} li,:is(${m}>*){line-height:calc(${RF_FONT.lineBase}px + var(--dsh-content-font-delta, 0px) + ${extra}px)}`);}
   probe.textContent=rules.join('\n');
 }
 // The plugin owns that style element and any value it wrote itself: unloading it must not leave
 // the host document permanently re-typeset, and it must not remove a size the host set later.
 function rfClearTypography(){
   document.getElementById('rf-typography')?.remove();
+  for(const el of document.querySelectorAll(`[${RF_BODY_MARK}]`))el.removeAttribute(RF_BODY_MARK);
   if(rfTypographyWritten&&document.body.style.getPropertyValue('--dsh-content-font-size')===rfTypographyWritten)document.body.style.removeProperty('--dsh-content-font-size');
   rfTypographyWritten='';
 }
@@ -607,11 +672,11 @@ function startReadingFocus() {
   // the column and the width handles is blank margin, not reading space.
   // A brand-new session has a composer but no message body; the effects have nothing to focus on
   // and must stay off until the first answer exists.
-  function hasConversation(scope){return !!scope?.querySelector?.(RF_ROOT);}
+  function hasConversation(scope){return !!scope?.querySelectorAll && queryRoots(scope).length>0;}
   function textColumn(scope){
-    const body=scope?.querySelector?.('.xMeOpW_body');
+    const root=scope?.querySelectorAll?queryRoots(scope)[0]:null;
+    const body=root?.parentElement;
     if(body){const r=rect(body);if(r.right-r.left>8)return r;}
-    const root=scope?.querySelector?.(RF_ROOT);
     if(root){const r=rect(root);if(r.right-r.left>8)return r;}
     return bandsWidth(scope);
   }
@@ -833,7 +898,7 @@ function startReadingFocus() {
     // uses, so one number means the same thing in both places. `extra` is added to the host's own
     // automatic line height, so 0 means "exactly like DSH".
     const syncFontControls=()=>{const f=state.font;
-      const px=Number.isFinite(f.size)?f.size:rfHostFontSize();
+      const px=Number.isFinite(f.size)?f.size:rfHostFontSize(roots);
       const extra=Number.isFinite(f.extra)?f.extra:0;
       fontSize.value=String(Math.round(px));fontExtra.value=String(Math.round(extra));};
     const refresh=()=>{
@@ -900,7 +965,7 @@ function startReadingFocus() {
       const px=clamp(Number.isFinite(sizeNum)?Math.round(sizeNum):RF_FONT.sizeDefault,RF_FONT.sizeMin,RF_FONT.sizeMax);
       const extra=clamp(Number.isFinite(extraNum)?Math.round(extraNum):RF_FONT.extraMin,RF_FONT.extraMin,RF_FONT.extraMax);
       state.font={size:px,extra};
-      rfApplyTypography(state.font);save();
+      rfApplyTypography(state.font,{roots});save();
       if(commit)syncFontControls();
       gradient.invalidate();queue();
     };
@@ -977,14 +1042,14 @@ function startReadingFocus() {
     }
     // The host's own settings write the same variable; adopt it when the write was not ours.
     if(records.some(rec=>rec.type==='attributes'&&rec.target===document.body&&rec.attributeName==='style'))adoptHostTypography();
-    if(structure){for(const r of roots)if(!r.isConnected||!matchesRoot(r)){blockCache.delete(r);roots.delete(r);if(activeBody===r){activeBody=null;activeBlock=null;if(!rfPointerMode(state.mode))hovering=false;}}watchRoots();}
+    if(structure){for(const r of roots)if(!r.isConnected||!matchesRoot(r)){blockCache.delete(r);roots.delete(r);if(activeBody===r){activeBody=null;activeBlock=null;if(!rfPointerMode(state.mode))hovering=false;}}watchRoots();if(document.getElementById('rf-typography')?.textContent)rfMarkBodies(roots);}
     if(changed||structure){
       occluderCandidates=null;
       if(structure)invalidate();
       if(structure&&state.mode==='gradient')gradient.scan();queue(true);queuePanel();
     }
   });
-  function startObservers(){roots.clear();occluderCandidates=null;queryRoots(document).forEach(el=>roots.add(el));watchRoots();observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['open','aria-modal','role','inert','data-ds-dark-theme','data-conversation-session','hidden','class','style']});}
+  function startObservers(){roots.clear();occluderCandidates=null;rfPrimeBodies(document);queryRoots(document).forEach(el=>roots.add(el));rfMarkBodies(roots);watchRoots();observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['open','aria-modal','role','inert','data-ds-dark-theme','data-conversation-session','hidden','class','style']});}
   function stopObservers(){observer.disconnect();resizeObserver.disconnect();roots.clear();occluderCandidates=null;}
   function blocks(root){
     let cached=blockCache.get(root);
@@ -1054,7 +1119,7 @@ function startReadingFocus() {
     if(now-lineHeightFrame>200)lineHeightCache=new Map(),lineHeightFrame=now;
     const key=scope||document.documentElement;
     if(lineHeightCache.has(key))return lineHeightCache.get(key);
-    const probe=key.querySelector?.('.xMeOpW_body p, .xMeOpW_body li');
+    const probe=rfReadingSample(key?.querySelectorAll?queryRoots(key):[]);
     let value=24;
     if(probe){const s=getComputedStyle(probe);value=rfLineHeight(s.fontSize,s.lineHeight,probe.getClientRects()[0]?.height);}
     else{const s=getComputedStyle(key);value=rfLineHeight(s.fontSize,s.lineHeight,NaN);}
@@ -1162,7 +1227,7 @@ function startReadingFocus() {
   // the interruption rather than restarting from base. Roots from a different answer (another
   // turn) stay separate, so a new answer does open at base.
   function rootGroup(root){
-    const lane=root.closest('.xMeOpW_body')||root.parentElement;
+    const lane=rfBodyAncestor(root)||root.parentElement;
     if(!lane)return [root];
     const scope=flowScope(lane)||lane;
     const all=[...scope.querySelectorAll(RF_ROOT)].filter(matchesRoot);
@@ -1198,11 +1263,14 @@ function startReadingFocus() {
   }
   function sameLane(a,b){return a.scroll===b.scroll&&a.session===b.session&&a.fallback===b.fallback&&a.chain.length===b.chain.length&&a.chain.every((x,i)=>x===b.chain[i]);}
   function bandBarriers(rawRects){
-    const selector='[data-turn-process-inline], [data-turn-process], [data-step-process], [data-chat-flow-kind="turn-process"], [data-chat-flow-kind="tool"], [data-chat-flow-kind="received-task"], [data-chat-steering-batch], .xMeOpW_body img, .xMeOpW_body video, .xMeOpW_body canvas';
+    const selector='[data-turn-process-inline], [data-turn-process], [data-step-process], [data-chat-flow-kind="turn-process"], [data-chat-flow-kind="tool"], [data-chat-flow-kind="received-task"], [data-chat-steering-batch]';
     const result=[];
     const candidates=new Set(document.querySelectorAll(selector));
     for(const el of document.querySelectorAll('[data-chat-flow-kind]:not([data-chat-flow-kind="assistant-step"])'))if(!matchesRoot(el)&&!queryRoots(el).length)candidates.add(el);
-    for(const body of document.querySelectorAll('.xMeOpW_body'))for(const el of body.children)if(!matchesRoot(el)&&!queryRoots(el).length)candidates.add(el);
+    // Bodies come from the recognised roots, so no class hash is assumed here either.
+    const bodies=new Set();
+    for(const root of roots)if(root.parentElement)bodies.add(root.parentElement);
+    for(const body of bodies){for(const el of body.children)if(!matchesRoot(el)&&!queryRoots(el).length)candidates.add(el);for(const el of body.querySelectorAll('img, video, canvas'))candidates.add(el);}
     for(const el of candidates){
       if(!el.isConnected||el.closest('[data-text-interaction-surface], [hidden], [aria-hidden="true"]'))continue;
       const s=getComputedStyle(el),r=rect(el),image=el.matches('img,video,canvas');
@@ -1332,7 +1400,7 @@ function startReadingFocus() {
       if(held)block=focusHold.block;
       if(!block){focusHold.block=null;clearDim();patchShapes(shapes);return;}
       focusHold={block,at:performance.now(),scrollY};
-      if(state.blockStyle!=='veil'&&paintDim(block,rfDimColor(state))){patchShapes(shapes);return;}
+      if(state.blockStyle!=='veil'&&paintDim(block,rfDimColor(state,roots))){patchShapes(shapes);return;}
       // Veil presentation, or a browser without CSS Custom Highlight.
       clearDim();
       const group=activeBody?rootGroup(activeBody):[];
@@ -1386,7 +1454,8 @@ function startReadingFocus() {
       clearPointer();return;
     }
     const targetCut=target?.closest?.(RF_OCCLUDERS);
-    if((targetCut&&isHostOccluder(targetCut)) || (target?.closest?.('.xMeOpW_body') && !closestRoot(target) && target.closest('.xMeOpW_body')!==target)){hovering=false;return;}
+    const targetBody=rfBodyAncestor(target);
+    if((targetCut&&isHostOccluder(targetCut)) || (targetBody && !closestRoot(target) && targetBody!==target)){hovering=false;return;}
     // Read every candidate rectangle first, decide afterwards: interleaving rect reads with the
     // elementFromPoint above is what makes a scroll-costly forced layout.
     let best=null,dist=Infinity;
@@ -1395,7 +1464,7 @@ function startReadingFocus() {
       const rr=rect(root),r=rfIntersect(rr,viewport(root));
       if(!r||lastX<r.left-12||lastX>r.right+12)continue;
       let top=r.top-12,bottom=r.bottom+12;
-      if(root.parentElement?.matches('.xMeOpW_body')){
+      if(root.parentElement && rfIsBody(root.parentElement)){
         const prev=root.previousElementSibling,next=root.nextElementSibling;
         if(matchesRoot(prev))top=Math.min(top,(rect(prev).bottom+rr.top)/2);
         if(matchesRoot(next))bottom=Math.max(bottom,(rr.bottom+rect(next).top)/2);
@@ -1454,7 +1523,7 @@ function startReadingFocus() {
   }
   const onLayout=()=>{queue(true);queuePanel();};const onResize=()=>{if(state.mode==='gradient')gradient.invalidate();onLayout();};
   // Adopt a saved font on load, but never write one that was never customised.
-  if(Object.keys(state.font).length)rfApplyTypography(state.font);document.addEventListener('pointermove',onMove,{passive:true});document.addEventListener('keydown',onKey);window.addEventListener('scroll',onScroll,true);window.addEventListener('resize',onResize);
+  if(Object.keys(state.font).length)rfApplyTypography(state.font,{roots});document.addEventListener('pointermove',onMove,{passive:true});document.addEventListener('keydown',onKey);window.addEventListener('scroll',onScroll,true);window.addEventListener('resize',onResize);
   // The on/off choice is a preference like any other: restoring it means the user does not have to
   // re-enable the effect after every restart.
   if(state.enabled)setEnabled(true);else sync();

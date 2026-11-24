@@ -1,7 +1,7 @@
 {
   "name": "dsh-reading-focus",
-  "version": "0.8.4",
-  "description": "Reading focus overlays for DSH: gradient text, ruler, line and block focus, colour bands",
+  "version": "0.8.6",
+  "description": "Reading focus overlays for DeepSeek Harness: gradient text, reading ruler, line and block focus, colour bands. Structure-based, so DSH 0.2.x class-name changes do not break it",
   "author": "dsh-reading-focus contributors",
   "repository": {
     "type": "git",

@@ -58,7 +58,29 @@ Reading rulers, line focus and colour bands have existed in browsers for a long 
 dsh plugin --profile <profile> add dsh-reading-focus
 ```
 
-Requires DSH 0.2.x (verified on 0.2.2-rc.5). You can also install the tarball from the [latest release](https://github.com/smallflycar/dsh-reading-focus/releases/latest).
+Requires DSH 0.2.x. You can also install the tarball from the [latest release](https://github.com/smallflycar/dsh-reading-focus/releases/latest).
+
+## Compatibility
+
+| DSH version | Reading body | Markdown root | Status |
+| --- | --- | --- | --- |
+| 0.2.3-alpha.1 and later | `xMeOpW_body` | `<hash>_markdown` (e.g. `-TmMFa_markdown`) | ✅ tested on 0.2.3-alpha.2 |
+| 0.2.2 rc line | `xMeOpW_body` | `_markdown_<hash>_<n>` | ✅ |
+| 0.2.1 and earlier | `v5IAXa_body` | `_markdown_<hash>_<n>` | ✅ by structure, not tested |
+
+Build hashes inside those class names are build artefacts and have nothing to do with the operating system; the plugin depends on neither the hash nor the order inside a class name:
+
+- a reading body is a container whose class token ends in `_body`, that holds a markdown root directly, and that is not inside a non-`assistant-step` flow item (tool rows, command rows);
+- a markdown root is a direct child whose class token contains `markdown`, so both `_markdown_<hash>_<n>` and `<hash>_markdown` are accepted;
+- if a host renames the `body` local too, the plugin falls back to structure: the container of markdown roots inside a chat flow.
+
+A DSH patch release, another machine or another OS therefore needs no selector update. The one case that still needs work is the host renaming the `markdown` local or moving markdown roots into another container.
+
+## Changelog
+
+**0.8.6** — adapts to the class-name change in DSH 0.2.3-alpha.1. That release moved `dsh-client-ui-primitives` into the frontend bundle, so the markdown root went from `_markdown_<hash>_<n>` to `<hash>_markdown` and the old selector found no reading block at all. Both orders and any hash are recognised now, and tool/command rows that also end in `_body` are kept out of the reading body.
+
+**0.8.5** — stops hard-coding the body hash; the line-height override anchors on the plugin's own `data-reading-focus-body` marker and is removed together with the override.
 
 ## Usage
 
