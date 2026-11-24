@@ -60,7 +60,7 @@ dsh plugin --profile <profile> add dsh-reading-focus
 
 Requires DSH 0.2.x. You can also install the tarball from the [latest release](https://github.com/smallflycar/dsh-reading-focus/releases/latest).
 
-> A freshly published version is held back by pnpm's release cooldown (`minimumReleaseAge`, 24 hours by default): without a version, `add dsh-reading-focus` may still install the previous one. To get the new version immediately, name it exactly, e.g. `dsh plugin --profile desktop add dsh-reading-focus@0.8.6` — pnpm then records that version in `minimumReleaseAgeExclude` and skips the cooldown for it.
+> A freshly published version is held back by pnpm's release cooldown (`minimumReleaseAge`, 24 hours by default): the usual "update" resolves a range and may still install the previous version. To get the new version immediately, name it — pick **Update to x.y.z** in the plugin's version list, or run `dsh plugin --profile desktop add dsh-reading-focus@x.y.z`. pnpm then records that version in `minimumReleaseAgeExclude` and skips the cooldown for it.
 
 ## Compatibility
 

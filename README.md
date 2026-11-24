@@ -60,7 +60,7 @@ dsh plugin --profile <profile> add dsh-reading-focus
 
 需要 DSH 0.2.x。也可以从 [Release](https://github.com/smallflycar/dsh-reading-focus/releases/latest) 下载 tarball 安装。
 
-> 刚发布的新版本会受 pnpm 的发布冷却（`minimumReleaseAge`，默认 24 小时）影响：不写版本号时可能仍装到上一个版本。想立刻用新版，装确切版本号，例如 `dsh plugin --profile desktop add dsh-reading-focus@0.8.6`；pnpm 会为该版本自动加一条 `minimumReleaseAgeExclude`，不受冷却限制。
+> 刚发布的新版本会受 pnpm 的发布冷却（`minimumReleaseAge`，默认 24 小时）影响：直接点“更新”走的是版本范围，可能仍装到上一个版本。想立刻用新版就**点名版本**——在插件详情页的版本列表里点「更新到 x.y.z」，或 `dsh plugin --profile desktop add dsh-reading-focus@x.y.z`；pnpm 会为该版本自动写一条 `minimumReleaseAgeExclude`，不受冷却限制。
 
 ## 兼容性
 
