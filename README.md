@@ -58,6 +58,14 @@
 dsh plugin --profile <profile> add dsh-reading-focus
 ```
 
+想一次就装上 npm 上的最新版本（同时绕开下面说的 24 小时冷却，需要本机有 `npm`）：
+
+```bash
+dsh plugin --profile desktop add "dsh-reading-focus@$(npm view dsh-reading-focus version)"
+```
+
+这行命令本身不含版本号：`$(npm view …)` 在你执行的那一刻查询最新版本，然后按「确切版本」安装。复制粘贴原样即可，不用每版都改。
+
 需要 DSH 0.2.x。也可以从 [Release](https://github.com/smallflycar/dsh-reading-focus/releases/latest) 下载 tarball 安装。
 
 > 刚发布的新版本会受 pnpm 的发布冷却（`minimumReleaseAge`，默认 24 小时）影响：直接点“更新”走的是版本范围，可能仍装到上一个版本。想立刻用新版就**点名版本**——在插件详情页的版本列表里点「更新到 x.y.z」，或 `dsh plugin --profile desktop add dsh-reading-focus@x.y.z`；pnpm 会为该版本自动写一条 `minimumReleaseAgeExclude`，不受冷却限制。

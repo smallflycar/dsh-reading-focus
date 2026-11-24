@@ -58,6 +58,14 @@ Reading rulers, line focus and colour bands have existed in browsers for a long 
 dsh plugin --profile <profile> add dsh-reading-focus
 ```
 
+To install whatever npm currently publishes as latest — and skip the 24-hour cooldown described below — use this (needs `npm` on the machine):
+
+```bash
+dsh plugin --profile desktop add "dsh-reading-focus@$(npm view dsh-reading-focus version)"
+```
+
+The line contains no version number: `$(npm view …)` looks it up when you run it and installs that exact version. Copy it as is; it never needs editing.
+
 Requires DSH 0.2.x. You can also install the tarball from the [latest release](https://github.com/smallflycar/dsh-reading-focus/releases/latest).
 
 > A freshly published version is held back by pnpm's release cooldown (`minimumReleaseAge`, 24 hours by default): the usual "update" resolves a range and may still install the previous version. To get the new version immediately, name it — pick **Update to x.y.z** in the plugin's version list, or run `dsh plugin --profile desktop add dsh-reading-focus@x.y.z`. pnpm then records that version in `minimumReleaseAgeExclude` and skips the cooldown for it.
